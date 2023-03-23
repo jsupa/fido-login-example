@@ -1,0 +1,47 @@
+{
+  "name": "fido-login-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint:staged": "lint-staged",
+    "lint:check": "eslint . --ignore-path .gitignore --ext .js",
+    "husky:prepare": "husky install && chmod ug+x .husky/*",
+    "env:init": "cp app.env.example app.env",
+    "env:set": "set -a; source app.env; set +a"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsupa/fido-login-example.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jsupa/fido-login-example/issues"
+  },
+  "homepage": "https://github.com/jsupa/fido-login-example#readme",
+  "dependencies": {
+    "@ptkdev/logger": "^1.8.0",
+    "log-to-file": "^3.0.3",
+    "mongoose": "^7.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.36.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsonc": "^2.6.0",
+    "eslint-plugin-prefer-arrow-functions": "^3.1.4",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.0",
+    "nodemon": "^2.0.21",
+    "prettier": "^2.8.4"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
+  }
+}
