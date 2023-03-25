@@ -1,0 +1,88 @@
+<p id="pub_key_check">🚨</p>
+<br>
+<button class="button blue" id="login">login</button>
+<br>
+<input type="text" id="username" placeholder="username">
+<button class="button blue" id="register">register</button>
+
+<script>
+  const pkc = document.getElementById('pub_key_check')
+  !window.PublicKeyCredential ? pkc.innerHTML = '❌' : pkc.innerHTML = '✅'
+
+  document.getElementById('login').addEventListener('click', () => {
+    return fetch('login/challange', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    .then(res => res.json())
+    .then(json => {
+      console.log(json)
+      const publicKey = {
+        challenge: Uint8Array.from(json.challenge, c => c.charCodeAt(0))
+      }
+      return navigator.credentials.get({ publicKey })
+    })
+  })
+
+  document.getElementById('register').addEventListener('click', () => {
+    const username = document.getElementById('username')
+
+    return fetch('signup/challange', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username: username.value })
+    })
+    .then(res => res.json())
+    .then(json => {
+      return navigator.credentials.create({
+        publicKey: {
+          rp: {
+            name: 'Demo'
+          },
+          user:{
+            id: Uint8Array.from(json.user.id, c => c.charCodeAt(0)),
+            name: username.value,
+            displayName: username.value
+          },
+          challenge: Uint8Array.from(json.challenge, c => c.charCodeAt(0)),
+          pubKeyCredParams: [
+            { type: 'public-key', alg: -7 }
+          ],
+          authenticatorSelection: {
+            userVerification: 'discouraged',
+            //authenticatorAttachment: "platform",
+            residentKey: 'required'
+          },
+        }
+      })
+    })
+    .then(creds => {
+      const body = {
+        response: {
+          clientDataJSON: btoa(String.fromCharCode.apply(null, new Uint8Array(creds.response.clientDataJSON))),
+          attestationObject: btoa(String.fromCharCode.apply(null, new Uint8Array(creds.response.attestationObject)))
+        }
+      }
+
+      if (creds.response.getTransport) {
+        body.response.transports = creds.response.getTransport()
+      }
+
+      return fetch('login/pub-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+    })
+    .then(res => res.json())
+    .then(json => {
+      console.log(json)
+    })
+  })
+</script>
